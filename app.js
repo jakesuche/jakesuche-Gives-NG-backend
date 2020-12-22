@@ -7,7 +7,7 @@ const globalErrorHandler = require('./api/controllers/errorController');
 const AppError = require('./api/utils/AppError');
 const rateLimit= require('express-rate-limit');
 const helmet= require('helmet');
-const mongoSanitize= require('mongo-sanitize')
+const mongoSanitize= require('express-mongo-sanitize')
 const xss= require('xss-clean');
 const hpp= require('hpp')
 
@@ -28,7 +28,7 @@ app.use('/api', limiter)
 
 app.use(express.json({limit: '10kb'}));
 
-// app.use(mongoSanitize())
+app.use(mongoSanitize())
 
 app.use(xss());
 
