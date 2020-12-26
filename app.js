@@ -48,6 +48,13 @@ app.use((req, res, next)=>{
     next()
 })
 
+app.use('/', (req, res, next)=>{
+    // res.status(200).json({
+    //     status:'success',
+    //     message:'Welcome to the GIVES NG testing Server'
+    // })
+    res.sendFile(path.join(__dirname,'/public/intro.html'));
+})
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/NGO', NGORoutes);
