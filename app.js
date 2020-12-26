@@ -3,6 +3,7 @@ const dotenv= require('dotenv')
 const morgan = require('morgan');
 const userRoutes= require('./api/routes/userRoutes');
 const adminRoutes= require('./api/routes/adminRoutes');
+const NGORoutes= require('./api/routes/NGORoutes')
 const globalErrorHandler = require('./api/controllers/errorController');
 const AppError = require('./api/utils/AppError');
 const rateLimit= require('express-rate-limit');
@@ -49,6 +50,7 @@ app.use((req, res, next)=>{
 
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
+app.use('/api/v1/NGO', NGORoutes);
 
 app.all('*', (req, res, next)=>{
     next(new AppError(`can't find ${req.originalUrl} on this server`))

@@ -58,16 +58,15 @@ adminSchema.methods.comparePassword= async function(userPassword, dbPassword){
 
 // check if password was changed after issuing the jwt
 // adminSchema.methods.changedPasswordAfter= async function(Jwt){
-
 // }
 
 
 // a query / find middleware
-// adminSchema.pre(/^find/, function(next){
-//     // find query that are active
-//     this.find({status: {$ne: 'suspend'}})
-//     next()
-// })
+adminSchema.pre(/^find/, function(next){
+    // find query that are not suspended
+    this.find({status: {$ne: 'suspend'}})
+    next()
+})
 
 
 

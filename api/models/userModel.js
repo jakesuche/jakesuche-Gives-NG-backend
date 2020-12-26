@@ -25,6 +25,10 @@ const userSchema= new mongoose.Schema({
     role:{
         type: String,
         default: 'user'
+    },
+    active:{
+        type: Boolean,
+        default: true
     }
 })
 
@@ -55,6 +59,15 @@ userSchema.methods.comparePassword= async function(userPassword, dbPassword){
 // userSchema.methods.changedPasswordAfter= async function(Jwt){
 
 // }
+
+
+
+// a query / find middleware that finds all active users
+userSchema.pre(/^find/, function(next){
+    this.find({active: {$ne: false}})
+    next()
+})
+
 
 
 const userModel= mongoose.model('User', userSchema)

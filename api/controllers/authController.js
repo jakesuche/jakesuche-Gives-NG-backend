@@ -2,6 +2,7 @@ const { promisify }= require('util');
 const jwt= require('jsonwebtoken');
 const User = require('../models/userModel');
 const Admin= require('../models/adminModel');
+const NGO= require('../models/NGOModel')
 const catchAsync= require('../utils/catchAsync');
 const AppError= require('../utils/AppError');
 
@@ -105,6 +106,88 @@ exports.loginUser= catchAsync(async(req, res, next)=>{
 
 
 //NGO AUTHENTICATION ROUTES
+exports.protectNGO= catchAsync(async(req, res, next)=>{
+
+    let token;
+
+    if(req.headers.authorization && req.headers.authorization.startsWith('Bearer')){
+        token= req.headers.authorization.split(' ')[1] 
+    }
+
+    if(!token){
+        return next(new AppError(`You are unauthorized.`, 401))
+    }
+
+    const decodedToken= await promisify(jwt.verify)(token, process.env.JWT_SECRET)
+    console.log(decodedToken);
+    
+
+    const currentNGO= await NGO.findById(decodedToken.id);
+    
+    if(!currentAdmin){
+        return next(new AppError(`NDO bearing this token does not exist.`, 401))
+    }
+
+    req.NGO = currentNGO;
+
+    next(); 
+})
+
+exports.signupNGO= catchAsync(async(req, res, next)=>{
+    const {name, email, password}= req.body;
+
+    const newNGO= await NGO.create({
+        name,
+        email,
+        password,
+        role: process.env.NGO
+    })
+
+    const token= newNGO.signinToken(newNGO._id)
+
+    //remove password from response
+    newNGO.password= undefined;
+    newNGO._v= undefined;
+    newNGO.role= undefined;
+
+    //creating a cookie to send to client
+    if(process.env.NODE_ENV ==='production') cookieOptions.secure= true;
+    res.cookie('jwt', token, cookieOptions)
+
+    res.status(200).json({
+        status:'success',
+        token,
+        data:{
+            user: newNGO
+        }
+    }) 
+})
+
+
+exports.loginNGO= catchAsync(async(req,res, next)=>{
+    const {email, password}= req.body;
+
+    const ngo= await NGO.findOne({email}).select('+password');
+
+    if(!email || !password){
+        return next(new AppError(`email and password not present.`, 401))
+    }
+
+    if(!ngo || !ngo.comparePassword(password, ngo.password)){
+        return next(new AppError(`Admin not found.`, 404))
+    }
+
+    const token= ngo.signinToken(ngo._id)
+
+    //creating a cookie to send to client
+    if(process.env.NODE_ENV ==='production') cookieOptions.secure= true;
+    res.cookie('jwt', token, cookieOptions)
+
+    res.status(200).json({
+        status:'success',
+        token
+    })
+})
 
 
 

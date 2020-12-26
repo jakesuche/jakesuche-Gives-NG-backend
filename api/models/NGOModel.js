@@ -63,15 +63,15 @@ NGOSchema.methods.comparePassword= async function(userPassword, dbPassword){
 
 
 // a query / find middleware
-// NGOSchema.pre(/^find/, function(next){
-//     // find query that are active
-//     this.find({status: {$ne: 'suspend'}})
-//     next()
-// })
+NGOSchema.pre(/^find/, function(next){
+    // find query that are active
+    this.find({status: {$ne: 'suspend'}})
+    next()
+})
 
 
 
-const NGOModel= mongoose.model('Admin', NGOSchema)
+const NGOModel= mongoose.model('NGO', NGOSchema)
 
 
 

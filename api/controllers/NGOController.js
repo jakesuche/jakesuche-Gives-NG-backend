@@ -1,6 +1,6 @@
 const { promisify }= require('util')
 const jwt= require('jsonwebtoken');
-const User = require('../models/userModel');
+const NGO = require('../models/NGOModel');
 const catchAsync= require('../utils/catchAsync')
 const AppError= require('../utils/AppError');
 const TemplateAPIMethods= require("./TemplateAPIMethods")
@@ -28,12 +28,12 @@ exports.getMe= (req, res, next)=>{
 }
 
 exports.getUser= catchAsync(async(req,res, next)=>{
-    const user= await User.findById(req.user.id).select('-role')
+    const ngo= await NGO.findById(req.user.id).select('-role')
 
     res.status(200).json({
         status:'success',
         data:{
-            user
+            ngo
         }
     })
 })
@@ -41,7 +41,7 @@ exports.getUser= catchAsync(async(req,res, next)=>{
 exports.updateMe= catchAsync(async(req,res, next)=>{
     const filteredBody= filterObj(req.body, 'name', 'email')
 
-    const user= await User.findByIdAndUpdate(req.user.id, filteredBody, {
+    const ngo= await NGO.findByIdAndUpdate(req.user.id, filteredBody, {
         new: true,
         runValidators: true
     });
@@ -50,18 +50,18 @@ exports.updateMe= catchAsync(async(req,res, next)=>{
     res.status(200).json({
         status:'success',
         data:{
-            user
+            ngo
         }
     })
 })
 
 exports.deleteMe= catchAsync(async(req,res, next)=>{
-    const user= await User.findByIdAndUpdate(req.user.id, {active: false});
+    const ngo= await NGO.findByIdAndUpdate(req.user.id, {active: false});
 
     res.status(204).json({
         status:'success',
         data:{
-            user
+            ngo
         }
     })
 })
@@ -70,14 +70,12 @@ exports.deleteMe= catchAsync(async(req,res, next)=>{
 
 
 //ADMIN USER PREMISSION ROUTES
-exports.getAllUsers= TemplateAPIMethods.getAll(User);
+exports.getAllNGO= TemplateAPIMethods.getAll(NGO);
 
-exports.getUser= TemplateAPIMethods.getOne(User);
+exports.getNGO= TemplateAPIMethods.getOne(NGO);
 
 // DO NOT CHANGE THE USER'S PASSWORD(ADMIN)
-exports.updateUser= TemplateAPIMethods.updateOne(User)
+exports.updateNGO= TemplateAPIMethods.updateOne(NGO)
 
-exports.deleteUser= TemplateAPIMethods.deleteOne(User);
-
-
+exports.deleteNGO= TemplateAPIMethods.deleteOne(NGO);
 
