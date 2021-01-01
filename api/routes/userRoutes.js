@@ -4,34 +4,37 @@ const UserController= require('../controllers/userController')
 
 
 
-const Router= express.Router();
+const router= express.Router();
 
 
 // login and signup
-Router.post('/signup', AuthController.signupUser)
-Router.post('/login', AuthController.loginUser)
+router.post('/signup', AuthController.signupUser)
+router.post('/login', AuthController.loginUser)
 
 
 // get me
-Router.get('/me',AuthController.protectUser, UserController.getMe, UserController.getUser)
+router.get('/me',AuthController.protectUser, UserController.getMe, UserController.getUser)
+
+// update password
+router.patch('/updatePassword', AuthController.forgotPasswordUser)
 
 // update me
-Router.patch('/updateMe', AuthController.protectUser, UserController.updateMe)
+router.patch('/updateMe', AuthController.protectUser, UserController.updateMe)
 
 // delete me
-Router.delete('/deleteMe', AuthController.protectUser, UserController.deleteMe)
+router.delete('/deleteMe', AuthController.protectUser, UserController.deleteMe)
 
 
 
 // protection middleware for admin(since it runs in sequence.. it will protect all router below it)
-Router.use(AuthController.protectAdmin);
+router.use(AuthController.protectAdmin);
 
 // get all user route
-Router
+router
 .route('/')
 .get(AuthController.restrictTo('SUDO'), UserController.getAllUsers)
 
-Router
+router
 .route('/:id')
 .get(AuthController.restrictTo('SUDO'), UserController.getUser)
 .patch(AuthController.restrictTo('SUDO'), UserController.updateUser)
@@ -41,4 +44,4 @@ Router
 
 
 
-module.exports= Router;
+module.exports= router;

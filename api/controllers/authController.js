@@ -5,6 +5,7 @@ const Admin= require('../models/adminModel');
 const NGO= require('../models/NGOModel')
 const catchAsync= require('../utils/catchAsync');
 const AppError= require('../utils/AppError');
+const TemplateAPIMethods= require('./TemplateAPIMethods')
 
 
 // COOKIE OPTIONS FOR RESPONSE
@@ -37,6 +38,10 @@ exports.protectUser= catchAsync(async(req, res, next)=>{
         return next(new AppError(`User bearing this token does not exist.`, 401))
     }
 
+    //check if the user change password
+    // if(currentUser.changedPasswordAfter(decodedToken.iat)){
+    //     return next(new AppError(`user just currently changed password... try again`, 401))
+    // }
 
     req.user = currentUser;
 
@@ -104,8 +109,15 @@ exports.loginUser= catchAsync(async(req, res, next)=>{
     })
 })
 
+exports.forgotPasswordUser= TemplateAPIMethods.forgotPasswordTemplate(User, 'users');
+
+exports.resetPassword= TemplateAPIMethods.resetPasswordTemplate(User)
+
+
 
 //NGO AUTHENTICATION ROUTES
+//PROTECT MIDDLEWARE FOR NGO
+
 exports.protectNGO= catchAsync(async(req, res, next)=>{
 
     let token;
@@ -124,9 +136,14 @@ exports.protectNGO= catchAsync(async(req, res, next)=>{
 
     const currentNGO= await NGO.findById(decodedToken.id);
     
-    if(!currentAdmin){
+    if(!currentNGO){
         return next(new AppError(`NDO bearing this token does not exist.`, 401))
     }
+
+    //check if the user change password
+    // if(currentNGO.changedPasswordAfter(decodedToken.iat)){
+    //     return next(new AppError(`user just currently changed password... try again`, 401))
+    // }
 
     req.NGO = currentNGO;
 
@@ -190,6 +207,10 @@ exports.loginNGO= catchAsync(async(req,res, next)=>{
 })
 
 
+exports.forgotPasswordNGO= TemplateAPIMethods.forgotPasswordTemplate(NGO, 'NGO');
+
+exports.resetPasswordNGO= TemplateAPIMethods.resetPasswordTemplate(NGO);
+
 
 
 // ADMIN AUTHENTICATION ROUTES
@@ -217,6 +238,11 @@ exports.protectAdmin= catchAsync(async(req, res, next)=>{
     if(!currentAdmin){
         return next(new AppError(`Admin bearing this token does not exist.`, 401))
     }
+
+    //check if the user change password
+    // if(currentAdmin.changedPasswordAfter(decodedToken.iat)){
+    //     return next(new AppError(`user just currently changed password... try again`, 401))
+    // }
 
     req.admin = currentAdmin;
 
@@ -293,3 +319,6 @@ exports.loginAdmin= catchAsync(async(req,res, next)=>{
 })
 
 
+exports.forgotPasswordAdmin= TemplateAPIMethods.forgotPasswordTemplate(Admin, 'admin');
+
+exports.resetPasswordAdmin= TemplateAPIMethods.resetPasswordTemplate(Admin)

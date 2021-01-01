@@ -1,6 +1,8 @@
+const crypto= require('crypto')
 const catchAsync = require("../utils/catchAsync");
 const ApiFeatures= require("../utils/APIFeatures");
 const AppError = require("../utils/AppError");
+const sendEmail= require("../utils/email")
 
 
 
@@ -91,4 +93,66 @@ exports.createOne= Model => catchAsync(async(req, res, next)=>{
             doc
         }
     })
+})
+
+
+exports.forgotPasswordTemplate= (Model, typeofUser) => catchAsync(async(req, res, next)=>{
+    //1- get the user based on the posted email
+    const user= await Model.findOne({email: req.body.email});
+
+    //2- check if user does exist or not
+    if(!user){
+        return next(new AppError(`There is no user with this email address`), 404)
+    }
+
+    //3- if user exists, generate the password reset token
+    const resetToken = user.createPasswordResetToken();
+
+    //4- then save the user(in order to save the encrypted password reset token generated in the userschema)
+    await user.save({validateBeforeSave: false})
+
+    //5- send the email
+    const resetUrl= `${req.protocol}://${req.get('host')}/api/v1/${typeofUser}/resetPassword/${resetToken}`
+
+    const message= `Forgot your password? submit a patch request with your password and password confirm to ${resetUrl}
+    .\n If you did not forget your password, please ignore this email`
+
+    try{
+        sendEmail({
+            email: user.email,
+            subject: `Your Password reset(Valid For 10mins)`,
+            message
+        })
+
+        res.status(200).json({
+            status:'success',
+            message:'the password reset token has been sent to your email'
+        })
+    }catch(err){
+        user.passwordResetToken= undefined;
+        user.passwordResetExpires= undefined;
+        await user.save({validateBeforeSave: false})
+
+        return next(new AppError(`There was an error sending the mail.. Try Again`), 400)
+    }
+})
+
+exports.resetPasswordTemplate= (Model)=> catchAsync(async(req, res, next)=>{
+    // generate our hashed token from the token sent through the url
+    const hashedToken= crypto.createHash('sha256').update(req.params.token).digest('hex');
+
+    // get user based on the hashed token and password reset token expiry date
+    const user= await Model.findOne({passwordResetToken: hashedToken, passwordResetExpires: {$gt: Date.now()}})
+
+    if(!user){
+        return next(new AppError(`Token is invalid or has expired`, 400))
+    }
+
+    // add the password to the user and reset the other values
+    user.password= req.body.password;
+    user.passwordResetToken= undefined;
+    user.passwordResetExpires= undefined;
+
+    // save the details to the user
+    await user.save()
 })

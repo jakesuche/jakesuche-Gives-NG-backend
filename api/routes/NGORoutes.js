@@ -4,34 +4,37 @@ const NGOController= require('../controllers/NGOController')
 
 
 
-const Router= express.Router();
+const router= express.Router();
 
 
 // login and signup
-Router.post('/signup', AuthController.signupUser)
-Router.post('/login', AuthController.loginUser)
+router.post('/signup', AuthController.signupNGO)
+router.post('/login', AuthController.loginNGO)
 
 
 // get me
-Router.get('/me',AuthController.protectUser, NGOController.getMe, NGOController.getUser)
+router.get('/me', AuthController.protectNGO, NGOController.getMe, NGOController.getUser)
+
+// update password
+router.patch('/updatePassword', AuthController.forgotPasswordNGO)
 
 // update me
-Router.patch('/updateMe', AuthController.protectUser, NGOController.updateMe)
+router.patch('/updateMe', AuthController.protectNGO, NGOController.updateMe)
 
 // delete me
-Router.delete('/deleteMe', AuthController.protectUser, NGOController.deleteMe)
+router.delete('/deleteMe', AuthController.protectNGO, NGOController.deleteMe)
 
 
 
 // protection middleware for admin(since it runs in sequence.. it will protect all router below it)
-Router.use(AuthController.protectAdmin);
+router.use(AuthController.protectAdmin);
 
 // get all user route
-Router
+router
 .route('/')
 .get(AuthController.restrictTo('SUDO'), NGOController.getAllNGO)
 
-Router
+router
 .route('/:id')
 .get(AuthController.restrictTo('SUDO'), NGOController.getNGO)
 .patch(AuthController.restrictTo('SUDO'), NGOController.updateNGO)
@@ -41,4 +44,4 @@ Router
 
 
 
-module.exports= Router;
+module.exports= router;

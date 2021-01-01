@@ -1,3 +1,4 @@
+const crypto= require('crypto')
 const mongoose= require('mongoose')
 const validator= require('validator')
 const bcrypt= require('bcrypt')
@@ -32,6 +33,15 @@ const adminSchema= new mongoose.Schema({
     },
     apiKey: {
         type: String
+    }, 
+    passwordChangedAt: {
+        type: Date
+    },
+    PasswordResetToken:{
+        type: String
+    },
+    PasswordResetExpires:{
+        type: Date
     }
 })
 
@@ -56,10 +66,27 @@ adminSchema.methods.comparePassword= async function(userPassword, dbPassword){
     return await bcrypt.compare(userPassword, dbPassword)
 }
 
-// check if password was changed after issuing the jwt
-// adminSchema.methods.changedPasswordAfter= async function(Jwt){
-// }
+// check if password has been changed before or after issuing JWTtimestamp
+adminSchema.methods.changedPasswordAfter= function(JWTTimestamp){
+    if(this.passwordChangedAt){
+        const changedTimestamp= parseInt(this.passwordChangedAt.getTime()/100, 10)
+        console.log(this.passwordChangedAt, JWTTimestamp)
+        return JWTTimestamp < changedTimestamp;
+    }
 
+    return false
+}
+
+// creating the password reset token using the schema
+adminSchema.methods.createPasswordResetToken= function(){
+    const resetToken= crypto.randomBytes(32).toString('hex');
+    
+    this.PasswordResetToken= crypto.createHash('sha256').update(resetToken).digest('hex');
+
+    this.PasswordResetExpires= Date.now() * 10 * 60 * 1000;
+
+    return resetToken;
+}
 
 // a query / find middleware
 adminSchema.pre(/^find/, function(next){

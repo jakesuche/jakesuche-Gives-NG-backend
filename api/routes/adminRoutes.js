@@ -4,34 +4,37 @@ const AdminController= require('../controllers/adminController')
 
 
 
-const Router= express.Router();
+const router= express.Router();
 
 
 
 //login
-Router.post('/login', AuthController.loginAdmin)
+router.post('/login', AuthController.loginAdmin)
 
 // protection middlewares for admin(since it runs in sequence.. it will protect all router below it)
-Router.use(AuthController.protectAdmin);
-Router.use(AuthController.restrictTo('SUDO'));
+router.use(AuthController.protectAdmin);
+router.use(AuthController.restrictTo('SUDO'));
 
 //signup
-Router.post('/signup', AuthController.signupAdmin)
+router.post('/signup', AuthController.signupAdmin)
 
 // get me
-Router.get('/me', AdminController.getMe, AdminController.getAdmin)
+router.get('/me', AdminController.getMe, AdminController.getAdmin)
+
+// update password
+router.patch('/updatePassword', AuthController.forgotPasswordAdmin)
 
 // update me
-Router.patch('/updateMe', AdminController.updateAdmin)
+router.patch('/updateMe', AdminController.updateAdmin)
 
 // delete me
-Router.delete('/deleteMe', AdminController.deleteAdmin)
+router.delete('/deleteMe', AdminController.deleteAdmin)
 
-Router
+router
 .route('/')
 .get(AdminController.getAllAdmins);
 
 
 
 
-module.exports= Router
+module.exports= router
