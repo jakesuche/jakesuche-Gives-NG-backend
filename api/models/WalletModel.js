@@ -5,15 +5,19 @@ const jwt= require('jsonwebtoken')
 
 
 
-const walletSchema= new mongoose.Schema({
-    project:{
-        type: String
-    },
+const walletSchemaUser= new mongoose.Schema({
     user:{
         type: mongoose.Schema.ObjectId,
         ref:'User',
         default: null
     },
+    Balance:{
+        type: Number,
+        default: 0
+    }
+})
+
+const walletSchemaNGO= new mongoose.Schema({
     NGO:{
         type: mongoose.Schema.ObjectId,
         ref:'NGO',
@@ -27,6 +31,11 @@ const walletSchema= new mongoose.Schema({
 
 
 
-const WalletModel= mongoose.model('Wallet', walletSchema);
 
-module.exports= WalletModel;
+const WalletModelUser= mongoose.model('WalletUser', walletSchemaUser);
+const WalletModelNGO= mongoose.model('WalletNGO', walletSchemaNGO);
+
+module.exports={
+    WalletModelUser,
+    WalletModelNGO
+}

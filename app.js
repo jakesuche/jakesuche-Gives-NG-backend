@@ -2,21 +2,41 @@ const path = require('path');
 const express= require('express');
 const dotenv= require('dotenv')
 const morgan = require('morgan');
-const userRoutes= require('./api/routes/userRoutes');
-const adminRoutes= require('./api/routes/adminRoutes');
-const NGORoutes= require('./api/routes/NGORoutes')
-const globalErrorHandler = require('./api/controllers/errorController');
-const AppError = require('./api/utils/AppError');
 const rateLimit= require('express-rate-limit');
 const helmet= require('helmet');
 const mongoSanitize= require('express-mongo-sanitize')
 const xss= require('xss-clean');
 const hpp= require('hpp')
+const cookieParser= require('cookie-parser')
+
+const userRoutes= require('./api/routes/userRoutes');
+const adminRoutes= require('./api/routes/adminRoutes');
+const NGORoutes= require('./api/routes/NGORoutes')
+const globalErrorHandler = require('./api/controllers/errorController');
+const AppError = require('./api/utils/AppError');
+
 
 
 dotenv.config()
 
 const app= express();
+
+app.set('view engine', 'pug');
+app.set('views', path.join(__dirname, 'views'));
+
+app.use((req, res, next) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader(
+        'Access-Control-Allow-Methods',
+        'GET, POST, OPTIONS, PUT, PATCH, DELETE'
+    );
+    res.setHeader(
+        'Access-Control-Allow-Headers',
+        'Authorization, Origin, Content-Type, Accept'
+    );
+    res.setHeader('Access-Control-Allow-Credentials', true);
+    next();
+});
 
 app.use(helmet());
 
@@ -29,6 +49,10 @@ const limiter= rateLimit({
 app.use('/api', limiter)
 
 app.use(express.json({limit: '10kb'}));
+
+app.use(cookieParser())
+
+app.use(express.urlencoded({extended: false}));
 
 app.use(mongoSanitize())
 

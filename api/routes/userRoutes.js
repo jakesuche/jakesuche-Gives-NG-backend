@@ -24,6 +24,15 @@ router.patch('/updateMe', AuthController.protectUser, UserController.updateMe)
 // delete me
 router.delete('/deleteMe', AuthController.protectUser, UserController.deleteMe)
 
+// initialize payment by user
+router.post('/initPayment', AuthController.protectUser, UserController.FundUserWallet)
+
+// verify payment by user (this will be added to the callback url in the paystack dashboard)
+router.get('/verifyPayment', AuthController.protectUser, UserController.verifyUserFundingWallet);
+
+
+
+
 
 
 // protection middleware for admin(since it runs in sequence.. it will protect all router below it)

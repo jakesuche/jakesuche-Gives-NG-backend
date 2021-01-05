@@ -17,6 +17,14 @@ const projectSchema= new mongoose.Schema({
     image:{
         type: String
     },
+    status:{
+        type: String,
+        enum:['ongoing', 'completed']
+    },
+    approved:{
+        type: Boolean,
+        default: false
+    },
     ProjectCreatedBy:{
         type: mongoose.Schema.ObjectId,
         ref:'User'

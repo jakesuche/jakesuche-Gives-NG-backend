@@ -4,11 +4,18 @@ const Project = require('../models/projectModel');
 const catchAsync= require('../utils/catchAsync')
 const AppError= require('../utils/AppError');
 const TemplateAPIMethods= require("./TemplateAPIMethods")
-const {initializePayment, verifyPayment} = require('../utils/paystack')(request);
 
 
 
 
+
+const filterObj=(obj, ...allowedFields)=>{
+    const newObj={}
+    Object.keys(obj).forEach((el)=>{
+        if(allowedFields.includes(el)) newObj[el]= obj[el]
+    })
+    return newObj;
+}
 
 
 exports.createProject= catchAsync(async(req, res, next)=>{
@@ -33,42 +40,45 @@ exports.createProject= catchAsync(async(req, res, next)=>{
 
 })
 
-exports.findProjects= catchAsync(async(req, res, next)=>{
-    const projects= await Project.find();
+exports.findProjects= TemplateAPIMethods.getAll(Project)
 
-    res.status(200).json({
-        status:'success',
-        data:{
-            projects
-        }
-    })
 
-})
-
-exports.findAProject= catchAsync(async(req, res, next)=>{
-    const project= await Project.findById(req.params.id);
-
-    if(!project){
-        return next(new AppError(`cannot find this project`, 404));
-    }
-
-    res.status(200).json({
-        status: 'success',
-        data:{
-            project
-        }
-    })
-
-})
+exports.findAProject= TemplateAPIMethods.getOne(Project)
 
 exports.updateProject= TemplateAPIMethods.updateOne(Project)
 
 exports.deleteProject= TemplateAPIMethods.deleteOne(Project)
 
-exports.donateToAProjectByUser= catchAsync(async(req, res, next)=>{
-
-})
 
 exports.donateToProjectAnonymous= catchAsync(async(req, res, next)=>{
 
+})
+
+
+
+
+
+
+
+
+
+//Admin Privileges
+
+exports.approveProject= catchAsync(async(req, res, next)=>{
+
+    // check to see if project is already approved
+    let doc= await Project.findOne({ _id: req.params.id }, {approved: true});
+
+    if(doc){
+        return next(new AppError(`this project has already been approved`, 401));
+    }
+
+    let doc= await Project.updateOne({ _id: req.params.id }, {approved: true});
+
+    res.status(200).json({
+        status:'success',
+        data:{
+            doc
+        }
+    })
 })

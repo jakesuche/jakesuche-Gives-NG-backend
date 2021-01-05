@@ -93,7 +93,7 @@ exports.loginUser= catchAsync(async(req, res, next)=>{
         return next(new AppError(`email and password not present.`, 401))
     }
 
-    if(!user || !user.comparePassword(password, user.password)){
+    if(!user || !(await user.comparePassword(password, user.password))){
         return next(new AppError(`User not found`, 404))
     }
 
@@ -190,7 +190,7 @@ exports.loginNGO= catchAsync(async(req,res, next)=>{
         return next(new AppError(`email and password not present.`, 401))
     }
 
-    if(!ngo || !ngo.comparePassword(password, ngo.password)){
+    if(!ngo || !(await ngo.comparePassword(password, ngo.password))){
         return next(new AppError(`Admin not found.`, 404))
     }
 
@@ -302,7 +302,7 @@ exports.loginAdmin= catchAsync(async(req,res, next)=>{
         return next(new AppError(`email and password not present.`, 401))
     }
 
-    if(!admin || !admin.comparePassword(password, admin.password)){
+    if(!admin || !(await admin.comparePassword(password, admin.password))){
         return next(new AppError(`Admin not found.`, 404))
     }
 

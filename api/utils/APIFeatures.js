@@ -38,7 +38,6 @@ class ApiFeatures{
         return this;
     }
     limitFields(){
-
         // limiting fields that we want to show(projecting)
         if(this.query.fields){
             const fields= this.query.fields.split(',').join(' ')
