@@ -28,7 +28,9 @@ exports.createProject= catchAsync(async(req, res, next)=>{
     const newProject= await Project.create({
         project,
         amount,
-        image
+        description,
+        image,
+        projectCreatedBy:''
     })
 
     res.status(201).json({
@@ -73,7 +75,10 @@ exports.approveProject= catchAsync(async(req, res, next)=>{
         return next(new AppError(`this project has already been approved`, 401));
     }
 
-    let doc= await Project.updateOne({ _id: req.params.id }, {approved: true});
+    doc = await Project.findByIdAndUpdate(req.params.id, {approved: true}, {
+        new: true
+    });
+    
 
     res.status(200).json({
         status:'success',

@@ -25,15 +25,15 @@ const projectSchema= new mongoose.Schema({
         type: Boolean,
         default: false
     },
-    ProjectCreatedBy:{
+    projectCreatedBy:{
         type: mongoose.Schema.ObjectId,
         ref:'User'
     },
-    ProjectAcceptedBy:{
+    projectAcceptedBy:{
         type: mongoose.Schema.ObjectId,
         ref:'NGO'
     },
-    Amount:{
+    amount:{
         type: Number,
         default: 0
     },

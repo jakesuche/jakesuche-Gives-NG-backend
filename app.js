@@ -11,7 +11,8 @@ const cookieParser= require('cookie-parser')
 
 const userRoutes= require('./api/routes/userRoutes');
 const adminRoutes= require('./api/routes/adminRoutes');
-const NGORoutes= require('./api/routes/NGORoutes')
+const NGORoutes= require('./api/routes/NGORoutes');
+const projectRoutes= require('./api/routes/projectRoutes')
 const globalErrorHandler = require('./api/controllers/errorController');
 const AppError = require('./api/utils/AppError');
 
@@ -76,6 +77,7 @@ app.use((req, res, next)=>{
 app.use('/api/v1/users', userRoutes);
 app.use('/api/v1/admin', adminRoutes);
 app.use('/api/v1/NGO', NGORoutes);
+app.use('/api/v1/projects', projectRoutes);
 
 app.use('/', (req, res, next)=>{
     // res.sendFile(path.join(__dirname,'/public/intro.html'));

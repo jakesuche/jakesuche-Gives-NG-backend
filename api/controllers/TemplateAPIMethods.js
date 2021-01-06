@@ -69,7 +69,9 @@ exports.deleteOne= Model => catchAsync(async(req, res, next)=>{
 })
 
 exports.updateOne= Model=> catchAsync(async(req, res, next)=>{
-    const doc= await Model.findByIdAndUpdate(req.body)
+    const doc= await Model.findByIdAndUpdate(req.params.id, req.body, {
+        new: true
+    })
 
     if(!doc){
         return next(new AppError(`no document found with this ID`, 404))

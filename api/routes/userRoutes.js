@@ -1,6 +1,7 @@
 const express= require('express');
 const AuthController= require('../controllers/authController')
 const UserController= require('../controllers/userController')
+const projectRoutes= require('../routes/projectRoutes')
 
 
 
@@ -11,9 +12,8 @@ const router= express.Router();
 router.post('/signup', AuthController.signupUser)
 router.post('/login', AuthController.loginUser)
 
-
 // get me
-router.get('/me',AuthController.protectUser, UserController.getMe, UserController.getUser)
+router.get('/me', AuthController.protectUser, UserController.getMe, UserController.getUser)
 
 // update password
 router.patch('/updatePassword', AuthController.forgotPasswordUser)
@@ -35,22 +35,25 @@ router.get('/verifyPayment', AuthController.protectUser, UserController.verifyUs
 
 
 
-// protection middleware for admin(since it runs in sequence.. it will protect all router below it)
-router.use(AuthController.protectAdmin);
-
+// admin
 // get all user route
 router
 .route('/')
-.get(AuthController.restrictTo('SUDO'), UserController.getAllUsers)
+.get(AuthController.protectAdmin, AuthController.restrictTo('SUDO'), UserController.getAllUsers)
 
 router
 .route('/:id')
-.get(AuthController.restrictTo('SUDO'), UserController.getUser)
-.patch(AuthController.restrictTo('SUDO'), UserController.updateUser)
-.delete(AuthController.restrictTo('SUDO'), UserController.deleteUser)
+.get(AuthController.protectAdmin, AuthController.restrictTo('SUDO'), UserController.getUser)
+.patch(AuthController.protectAdmin, AuthController.restrictTo('SUDO'), UserController.updateUser)
+.delete(AuthController.protectAdmin, AuthController.restrictTo('SUDO'), UserController.deleteUser)
 
 
 
+
+
+
+//middleware for users and project(NESTED ROUTE)
+router.use('/me/createProject', projectRoutes)
 
 
 module.exports= router;
