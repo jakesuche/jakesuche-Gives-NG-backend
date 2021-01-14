@@ -7,25 +7,6 @@ const jwt= require('jsonwebtoken')
 
 
 const NGOSchema= new mongoose.Schema({
-    name:{
-        type: String
-    },
-    email:{
-        type: String,
-        required: [true, 'email cannot be empty'],
-        lowercase: true,
-        unique: true,
-        validate:[validator.isEmail, 'please type a correct email']
-    },
-    password:{
-        type: String,
-        required: [true, 'password cannot be empty'],
-        minlength: 8,
-        select: false
-    },
-    role:{
-        type: String
-    },
     status: {
         type: String,
         enum: ['active','suspend'],
@@ -34,14 +15,8 @@ const NGOSchema= new mongoose.Schema({
     CaCNumber:{
         type: Number
     },
-    passwordChangedAt: {
-        type: Date
-    },
-    PasswordResetToken:{
+    organization:{
         type: String
-    },
-    PasswordResetExpires:{
-        type: Date
     }
 })
 

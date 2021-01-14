@@ -31,7 +31,7 @@ const projectSchema= new mongoose.Schema({
     },
     projectAcceptedBy:{
         type: mongoose.Schema.ObjectId,
-        ref:'NGO'
+        ref:'User'
     },
     amount:{
         type: Number,

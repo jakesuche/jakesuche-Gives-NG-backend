@@ -23,14 +23,6 @@ const userSchema= new mongoose.Schema({
         minlength: 8,
         select: false
     },
-    role:{
-        type: String,
-        default: 'user'
-    },
-    active:{
-        type: Boolean,
-        default: true
-    },
     passwordChangedAt: {
         type: Date
     },
@@ -39,6 +31,19 @@ const userSchema= new mongoose.Schema({
     },
     PasswordResetExpires:{
         type: Date
+    },
+    role:{
+        type: String,
+        enum:['user', 'NGO', 'Admin', 'SUDO'],
+        default: 'user'
+    },
+    profile:{
+        type: mongoose.Schema.ObjectId,
+        ref:'NGO'
+    },
+    active:{
+        type: Boolean,
+        default: true
     }
 })
 
@@ -90,13 +95,22 @@ userSchema.methods.createPasswordResetToken= function(){
 // a query / find middleware that finds all active users
 userSchema.pre(/^find/, function(next){
     this.find({active: {$ne: false}})
-    next()
+    next();
 })
 
 
+// populate middleware to populate the  wallet objectId references in our model
+userSchema.pre(/^findByIdAnd/, async function(next){
+    this.populate({
+        path:'wallet'
+    })
+    next();
+ })
 
-const userModel= mongoose.model('User', userSchema)
 
 
+
+
+const userModel= mongoose.model('User', userSchema);
 
 module.exports= userModel;

@@ -1,5 +1,4 @@
-const { promisify }= require('util')
-const jwt= require('jsonwebtoken');
+const Wallet= require('../models/WalletModel')
 const catchAsync= require('../utils/catchAsync')
 const AppError= require('../utils/AppError');
 const TemplateAPIMethods= require("./TemplateAPIMethods")
@@ -8,13 +7,15 @@ const {initializePayment, verifyPayment} = require('../utils/paystack')(request)
 var paystack = require('paystack')('secret_key');
 const crypto= require('crypto');
 const Transaction = require('../models/TransactionsModel')
-const Project = require('../models/projectModel');
-const Wallet= require('../models/WalletModel')
 
 
 
 
 
+//USER ROUTES
+
+
+// to filter object for update user
 const filterObj=(obj, ...allowedFields)=>{
     const newObj={}
     Object.keys(obj).forEach((el)=>{
@@ -23,48 +24,22 @@ const filterObj=(obj, ...allowedFields)=>{
     return newObj;
 }
 
-
-exports.createProject= catchAsync(async(req, res, next)=>{
-    const {project, amount, description, image }= req.body
-
-    if(!project || !amount || !description ){
-        return next(new AppError(`incomplete fields.. please insert the values`, 401))
-    }
-
-    const newProject= await Project.create({
-        project,
-        amount,
-        description,
-        image,
-        projectCreatedBy: req.body.projectCreatedBy
-    })
-
-    res.status(201).json({
+exports.getMyWallet= catchAsync(async(req, res, next)=>{
+    const wallet= await Wallet.findOne({user: req.user._id})
+    res.status(200).json({
         status:'success',
         data:{
-            project: newProject
+            wallet
         }
     })
-
 })
 
-exports.Initializedonation= catchAsync(async(req, res, next)=>{
+
+
+exports.FundUserWallet= catchAsync(async(req, res, next)=>{
 
     // filter out important details to send like the price and amount details
     const filteredBody= filterObj(req.body, 'amount','email','full_name')
-
-    // find the wallet of the user
-    let wallet= await Wallet.findOne({user: req.user._id});
-
-    if(!wallet){
-        return next(new AppError(`the wallet belonging to the user cannot be found`, 404))
-    }
-
-    // check balance in wallet if is greater than the amount to be donated
-    if(wallet.Balance < filteredBody.amount){
-        return next(new AppError(`your balance isn't sufficient for donation`, 401))
-    }
-
 
     // payload to send to paystack to initialize a transaction
     const paystack_data = {
@@ -113,9 +88,12 @@ exports.Initializedonation= catchAsync(async(req, res, next)=>{
         // if (response) res.redirect(301, response.data.authorization_url);
 
     });
+
 })
 
-exports.verifyDonation= catchAsync(async(req, res, next)=>{
+
+exports.verifyUserFundingWallet= catchAsync(async(req, res, next)=>{
+
     // obtaining reference of the redirect to verify payment/funding user wallet
     const ref = req.query.reference;
 
@@ -127,24 +105,7 @@ exports.verifyDonation= catchAsync(async(req, res, next)=>{
         }
 
         let response = JSON.parse(body);     
-        console.log(response)  
-
-        // reflect the payment on the project
-        await Project.findByIdAndUpdate(req.params.id, {
-            // update the project
-        },{
-            new: true
-        })
-        
-        // update the wallet with the new balance
-        let wallet= await Wallet.findByIdAndUpdate(req.user._id, {
-            // Balance: 
-        },{
-            new: true
-        });
-
-
-
+        console.log(response)   
         res.status(200).json({
             status:'success',
             data:{
@@ -155,45 +116,36 @@ exports.verifyDonation= catchAsync(async(req, res, next)=>{
     })
 })
 
-exports.donateToProjectAnonymous= catchAsync(async(req, res, next)=>{
-
-})
 
 
 
 
-
-
-
-
-//Admin Privileges
-
-exports.findProjects= TemplateAPIMethods.getAll(Project)
-
-exports.findAProject= TemplateAPIMethods.getOne(Project)
-
-exports.updateProject= TemplateAPIMethods.updateOne(Project)
-
-exports.deleteProject= TemplateAPIMethods.deleteOne(Project)
-
-exports.approveProject= catchAsync(async(req, res, next)=>{
-
-    // check to see if project is already approved
-    let doc= await Project.findOne({_id: req.params.id }, {approved: false});
-
-    if(!doc){
-        return next(new AppError(`this project has already been approved`, 401));
-    }
-
-    doc = await Project.findByIdAndUpdate(req.params.id, {approved: true}, {
-        new: true
-    });
+ exports.userSendMoney= catchAsync(async(req, res, next)=>{
     
+ })
 
+
+
+ // ADMIN CONTROLLERS
+
+
+exports.getAllWallet= catchAsync(async(req, res, next)=>{
+
+    const wallets= await Wallet.find()
     res.status(200).json({
         status:'success',
         data:{
-            doc
+            wallets
+        }
+    })
+})
+
+exports.getWallet= catchAsync(async(req, res, next)=>{
+    const wallet= await Wallet.findById(req.params.id)
+    res.status(200).json({
+        status:'success',
+        data:{
+            wallet
         }
     })
 })
