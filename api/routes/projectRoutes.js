@@ -11,7 +11,7 @@ const router= express.Router({mergeParams: true});
 router
 .route('/')
 .get(ProjectController.findProjects)
-.post(ProjectController.createProject)
+.post( Middleware.protectUser, Middleware.restrictTo('user'), ProjectController.createProject)
 
 //approve project by NGO
 router.patch('/:id/approve', Middleware.protectUser, Middleware.restrictTo('SUDO'), ProjectController.approveProject)

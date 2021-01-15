@@ -79,8 +79,7 @@ app.use('/api/v1/wallets', walletRoutes);
 
 
 app.use('/', (req, res, next)=>{
-    // res.sendFile(path.join(__dirname,'/public/intro.html'));
-    res.status(200).render('/public/intro.html');
+    res.sendFile(path.join(__dirname,'/public/intro.html'));
 })
 
 

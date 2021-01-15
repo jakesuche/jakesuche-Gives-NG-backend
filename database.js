@@ -14,7 +14,6 @@ const connection= ()=>{
             useFindAndModify: false,
             useUnifiedTopology: true,
         }).then((conn)=>{
-            console.log(conn);
             console.log(`connecting to online db successful`)
         }).catch((err)=>{
             console.log(`connecting to online db unsuccessful`)
@@ -26,7 +25,6 @@ const connection= ()=>{
             useFindAndModify: false,
             useUnifiedTopology: true,
         }).then((conn)=>{
-            console.log(conn);
             console.log(`connecting to local db  successful`)
         }).catch((err)=>{
             console.log(`connecting to local db  unsuccessful`)
