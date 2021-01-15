@@ -16,21 +16,22 @@ router
 // accepted By NGO
 router.patch('/:id/acceptProject', Middleware.protectUser, Middleware.restrictTo('NGO'), ProjectController.acceptProject)
 
-
-//approve project by ADMIN
-router.patch('/:id/approve', Middleware.protectUser, Middleware.restrictTo('SUDO'), ProjectController.approveProject)
-
 //donate to project
 router.post('/:id/donate/initialize', Middleware.protectUser, Middleware.restrictTo('user'), ProjectController.Initializedonation)
 router.get('/:id/donate/verify', Middleware.protectUser, Middleware.restrictTo('user'), ProjectController.verifyDonation)
 
 
+
+
 // find, update and delete project
 router
 .route('/:id')
-.get(ProjectController.findAProject)
-.patch(ProjectController.updateProject)
-.delete(ProjectController.deleteProject)
+.get(Middleware.protectUser, Middleware.restrictTo('SUDO'), ProjectController.findAProject)
+.patch(Middleware.protectUser, Middleware.restrictTo('SUDO'), ProjectController.updateProject)
+.delete(Middleware.protectUser, Middleware.restrictTo('SUDO'), ProjectController.deleteProject)
+
+//approve project by ADMIN
+router.patch('/:id/approve', Middleware.protectUser, Middleware.restrictTo('SUDO'), ProjectController.approveProject)
 
 
 
