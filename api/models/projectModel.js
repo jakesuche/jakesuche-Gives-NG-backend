@@ -37,6 +37,10 @@ const projectSchema= new mongoose.Schema({
         type: Number,
         default: 0
     },
+    amounrDonated:{
+        type: Number,
+        default: 0
+    },
     signedUpDonators:{
         type: mongoose.Schema.ObjectId,
         ref:'User'

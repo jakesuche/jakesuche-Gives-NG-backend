@@ -13,7 +13,11 @@ router
 .get(ProjectController.findProjects)
 .post( Middleware.protectUser, Middleware.restrictTo('user'), ProjectController.createProject)
 
-//approve project by NGO
+// accepted By NGO
+router.patch('/:id/acceptProject', Middleware.protectUser, Middleware.restrictTo('NGO'), ProjectController.acceptProject)
+
+
+//approve project by ADMIN
 router.patch('/:id/approve', Middleware.protectUser, Middleware.restrictTo('SUDO'), ProjectController.approveProject)
 
 //donate to project

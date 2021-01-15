@@ -9,7 +9,8 @@ var paystack = require('paystack')('secret_key');
 const crypto= require('crypto');
 const Transaction = require('../models/TransactionsModel')
 const Project = require('../models/projectModel');
-const Wallet= require('../models/WalletModel')
+const Wallet= require('../models/WalletModel');
+const mongoose = require('mongoose')
 
 
 
@@ -36,7 +37,7 @@ exports.createProject= catchAsync(async(req, res, next)=>{
         amount,
         description,
         image,
-        projectCreatedBy: req.body.projectCreatedBy
+        projectCreatedBy: req.user._id
     })
 
     res.status(201).json({
@@ -46,6 +47,31 @@ exports.createProject= catchAsync(async(req, res, next)=>{
         }
     })
 
+})
+exports.acceptProject= catchAsync(async(req, res, next)=>{
+
+    // check to see if project is already accepted by another NGO and is also approved by admin
+    let doc= await Project.findOne(
+        {_id: req.params.id }, 
+        {approved: true, projectAcceptedBy: mongoose.Schema.ObjectId}
+    );
+
+    if(doc){
+        return next(new AppError(`this project has already been accepted by another NGO`, 401));
+    }
+
+    doc = await Project.findByIdAndUpdate(req.params.id, 
+        {approved: true, projectAcceptedBy: req.user._id}, 
+        {new: true}
+    );
+    
+
+    res.status(200).json({
+        status:'success',
+        data:{
+            doc
+        }
+    })
 })
 
 exports.Initializedonation= catchAsync(async(req, res, next)=>{
@@ -131,13 +157,14 @@ exports.verifyDonation= catchAsync(async(req, res, next)=>{
 
         // reflect the payment on the project
         await Project.findByIdAndUpdate(req.params.id, {
-            // update the project
+            // update the project amount
+            // update the signed up donators
         },{
             new: true
         })
         
         // update the wallet with the new balance
-        let wallet= await Wallet.findByIdAndUpdate(req.user._id, {
+        await Wallet.findByIdAndUpdate(req.user._id, {
             // Balance: 
         },{
             new: true
