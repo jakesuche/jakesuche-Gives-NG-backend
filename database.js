@@ -18,7 +18,8 @@ const connection= ()=>{
         }).catch((err)=>{
             console.log(`connecting to online db unsuccessful`)
         })
-    }else{
+    }
+    else{
         mongoose.connect(process.env.DATABASE_LOCAL, {
             useNewUrlParser: true,
             useCreateIndex: true,
