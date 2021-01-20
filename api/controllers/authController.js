@@ -16,27 +16,81 @@ const cookieOptions= {
 // USER AUTHENTICATION ROUTES
 
 exports.signupUser= catchAsync(async(req, res, next)=>{
+    const {
+        name, 
+        email, 
+        password,
+        NGOName,
+        phoneNumber,
+        address,
+        LGA,
+        CACNumber,
+        NGODescription
+    }= req.body;
 
-    const {name, email, password}= req.body;
+    // declaring new user
+    let newUser;
 
-    const newUser= await User.create({
-        name,
-        email,
-        password
+    // check if there is a header
+    if(!req.headers.role){
+        return next(new AppError(`you are highly unauthorized to signup`, 401))
+    }
+
+    if(req.headers.role==='user'){
+        if(!name || !email || !password){
+            return next(new AppError(`you have to provide these details`, 404))
+        }
+
+        newUser= await User.create({
+            name,
+            email,
+            password,
+        })
+
+    }else if(req.headers.role==='NGO'){
+        if(!name || !email || !password || !NGOName || !phoneNumber || !address || !LGA || !CACNumber || !NGODescription){
+            return next(new AppError(`you have to provide these details`, 404))
+        }
+
+        newUser= await User.create({
+            name,
+            email,
+            password,
+            organization:{
+                NGOName,
+                phoneNumber,
+                address,
+                LGA,
+                CACNumber,
+                NGODescription
+            },
+            role: req.headers.role
+        })
+
+    }else if(req.headers.role==='SUDO'){
+
+        newUser= await User.create({
+            name,
+            email,
+            password,
+            role: req.headers.role
+        })
+    }
+    
+    
+    // create wallet for new user
+    await Wallet.create({
+        user: newUser._id,
+        balance: 0
     })
 
+    //create token
     const token= newUser.signinToken(newUser._id);
 
     // remove password from response
     newUser.password= undefined;
     newUser._v= undefined;
     newUser.role= undefined;
-
-    // create wallet for new user
-    await Wallet.create({
-        user: newUser._id,
-        balance: 0
-    })
 
     //creating a cookie to send to client
     if(process.env.NODE_ENV ==='production') cookieOptions.secure= true;

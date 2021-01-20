@@ -97,11 +97,28 @@ exports.verifyUserFundingWallet= catchAsync(async(req, res, next)=>{
     // obtaining reference of the redirect to verify payment/funding user wallet
     const ref = req.query.reference;
 
-    verifyPayment(ref, async(error,body)=>{
+    verifyPayment(ref, async(error, body)=>{
         if(error){
             //handle errors appropriately
             console.log(error)
             return next(new AppError(`Verifying Payment was Unsuccessful`, 401))
+        }
+
+        // data from the body
+        let { status, ip_address, reference, currency, channel } = body.data.data;
+        
+        // update the transaction 
+        await Transaction.updateOne(
+            { userId: req.user.id, reference },
+            { $set: { status }, ip_address, reference, currency, channel },
+        );
+
+        // find user with reference
+        let transaction_id = await Transaction.findOne({ userId: req.user.id, reference });
+
+        if (body.status == "success") {
+            // update the wallet
+            await Wallet.updateOne({ _id: req.user.id }, { $inc: { balance: transaction_id.amount } });
         }
 
         let response = JSON.parse(body);     

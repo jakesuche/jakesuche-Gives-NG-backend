@@ -8,7 +8,8 @@ const jwt= require('jsonwebtoken')
 
 const userSchema= new mongoose.Schema({
     name:{
-        type: String
+        type: String,
+        required: [true, 'name cannot be empty'],
     },
     email:{
         type: String,
@@ -37,9 +38,13 @@ const userSchema= new mongoose.Schema({
         enum:['user', 'NGO', 'Admin', 'SUDO'],
         default: 'user'
     },
-    profile:{
-        type: mongoose.Schema.ObjectId,
-        ref:'NGO'
+    organization:{
+        NGOName: String,
+        phoneNumber: Number,
+        address: String,
+        LGA: String,
+        CACNumber: Number,
+        NGODescription: String
     },
     active:{
         type: Boolean,
