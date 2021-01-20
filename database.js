@@ -16,6 +16,7 @@ const connection= ()=>{
         }).then((conn)=>{
             console.log(`connecting to online db successful`)
         }).catch((err)=>{
+            console.log(err)
             console.log(`connecting to online db unsuccessful`)
         })
     }
