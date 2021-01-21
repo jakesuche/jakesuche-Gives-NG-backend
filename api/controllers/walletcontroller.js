@@ -104,8 +104,12 @@ exports.verifyUserFundingWallet= catchAsync(async(req, res, next)=>{
             return next(new AppError(`Verifying Payment was Unsuccessful`, 401))
         }
 
+        // the response
+        let response = JSON.parse(body);     
+        console.log(response)  
+
         // data from the body
-        let { status, ip_address, reference, currency, channel } = body.data.data;
+        let { status, ip_address, reference, currency, channel } = response.data.data;
         
         // update the transaction 
         await Transaction.updateOne(
@@ -113,16 +117,15 @@ exports.verifyUserFundingWallet= catchAsync(async(req, res, next)=>{
             { $set: { status }, ip_address, reference, currency, channel },
         );
 
-        // find user with reference
-        let transaction_id = await Transaction.findOne({ userId: req.user.id, reference });
+        if (response.status == "success") {
 
-        if (body.status == "success") {
+            // find user with reference
+            let transaction_id = await Transaction.findOne({ userId: req.user.id, reference });
+            
             // update the wallet
             await Wallet.updateOne({ _id: req.user.id }, { $inc: { balance: transaction_id.amount } });
         }
-
-        let response = JSON.parse(body);     
-        console.log(response)   
+ 
         res.status(200).json({
             status:'success',
             data:{

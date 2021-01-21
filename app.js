@@ -8,6 +8,7 @@ const mongoSanitize= require('express-mongo-sanitize')
 const xss= require('xss-clean');
 const hpp= require('hpp')
 const cookieParser= require('cookie-parser')
+const cors= require('cors')
 
 const userRoutes= require('./api/routes/userRoutes');
 const projectRoutes= require('./api/routes/projectRoutes')
@@ -20,6 +21,10 @@ const AppError = require('./api/utils/AppError');
 dotenv.config()
 
 const app= express();
+
+
+//CORS
+app.use(cors());
 
 app.set('view engine', 'pug');
 app.set('views', path.join(__dirname, 'views'));
