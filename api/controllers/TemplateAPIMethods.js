@@ -2,7 +2,7 @@ const crypto= require('crypto')
 const catchAsync = require("../utils/catchAsync");
 const ApiFeatures= require("../utils/APIFeatures");
 const AppError = require("../utils/AppError");
-const sendEmail= require("../utils/email")
+const Email= require("../utils/email")
 
 
 
@@ -120,11 +120,13 @@ exports.forgotPasswordTemplate= (Model, typeofUser) => catchAsync(async(req, res
     .\n If you did not forget your password, please ignore this email`
 
     try{
-        sendEmail({
-            email: user.email,
-            subject: `Your Password reset(Valid For 10mins)`,
-            message
-        })
+
+        await new Email(user, resetUrl).sendPasswordReset();
+        // sendEmail({
+        //     email: user.email,
+        //     subject: `Your Password reset(Valid For 10mins)`,
+        //     message
+        // })
 
         res.status(200).json({
             status:'success',

@@ -28,7 +28,8 @@ exports.getMe= (req, res, next)=>{
 }
 
 exports.getUser= catchAsync(async(req,res, next)=>{
-    const user= await User.findById(req.user.id).select('-role')
+    // const user= await User.findById(req.user.id).select('-role')
+    const user= await User.findById(req.user.id);
 
     res.status(200).json({
         status:'success',

@@ -46,7 +46,7 @@ app.use((req, res, next) => {
 app.use(helmet());
 
 const limiter= rateLimit({
-    max: 100,
+    max: 10000,
     windowMs: 60 * 60 * 1000,
     message: 'Too many request from this IP.. try again in another hour'
 })
