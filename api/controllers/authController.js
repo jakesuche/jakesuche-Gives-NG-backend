@@ -34,7 +34,8 @@ exports.signupUser= catchAsync(async(req, res, next)=>{
 
     // check if there is a header
     if(!req.headers.role){
-        return next(new AppError(`you are highly unauthorized to signup`, 401))
+        req.headers.role= 'user'
+        // return next(new AppError(`you are highly unauthorized to signup`, 401))
     }
 
     if(req.headers.role==='user'){
@@ -122,7 +123,7 @@ exports.loginUser= catchAsync(async(req, res, next)=>{
     }
 
     if(!user || !(await user.comparePassword(password, user.password))){
-        return next(new AppError(`User not found`, 404))
+        return next(new AppError(`User not found`, 401))
     }
 
     const token= user.signinToken(user._id);

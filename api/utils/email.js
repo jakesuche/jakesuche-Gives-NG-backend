@@ -33,12 +33,21 @@ module.exports= class Email{
             });
         }
 
+        // return nodemailer.createTransport({
+        //     host: process.env.EMAIL_HOST,
+        //     port: parseInt(process.env.EMAIL_PORT),
+        //     auth: {
+        //         user: process.env.EMAIL_USERNAME,
+        //         pass: process.env.EMAIL_PASSWORD
+        //     }
+        // });
+
         return nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: process.env.EMAIL_PORT,
+            host: "smtp.mailtrap.io",
+            port: 2525,
             auth: {
-                user: process.env.EMAIL_USERNAME,
-                pass: process.env.EMAIL_PASSWORD
+              user: "c34b024c63ce99",
+              pass: "963dda5ff24e3a"
             }
         });
         
@@ -46,7 +55,7 @@ module.exports= class Email{
 
     async send(template, subject){
         //  render html based on a pug template
-        const html= pug.renderFile(`${__dirname}/views/email/${template}.pug`, {
+        const html= pug.renderFile(`${__dirname}/../views/email/${template}.pug`, {
             firstname: this.firstname,
             url: this.url,
             subject

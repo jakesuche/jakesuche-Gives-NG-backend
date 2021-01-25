@@ -1,0 +1,29 @@
+[{
+  "_id": {
+    "$oid": "6008811b5934b530dcb35c1d"
+  },
+  "role": "NGO",
+  "active": true,
+  "name": "peter",
+  "email": "peterosah5@gmail.com",
+  "password": "$2b$12$eFpR9l53ImuT5K6gZbtSg.cUI1y/GwEDw4H89N93f2fDzcN/lyQg.",
+  "organization": {
+    "NGOName": "Save the Green",
+    "phoneNumber": 7030789049,
+    "address": "45 Kubwa way off Airport Road Abuja",
+    "LGA": "Abuja LGA",
+    "CACNumber": 112323325,
+    "NGODescription": "we help preserve nature"
+  },
+  "__v": 0
+},{
+  "_id": {
+    "$oid": "600882aa5934b530dcb35c20"
+  },
+  "role": "user",
+  "active": true,
+  "name": "dajukee",
+  "email": "dajukee@gmail.com",
+  "password": "$2b$12$3EgOFJ/11sEuSljdeGwtMuB03PRGVPgyqgZ57MjbX7swM25pUbdiW",
+  "__v": 0
+}]

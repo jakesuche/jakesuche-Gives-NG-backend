@@ -52,6 +52,15 @@ const projectSchema= new mongoose.Schema({
 
 
 
+projectSchema.pre(/^find/, function(next){
+    this.populate({
+        path:'projectCreatedBy',
+        select:'-_v '
+    })
+    next();
+})
+
+
 const ProjectModel= mongoose.model('Project', projectSchema);
 
 module.exports= ProjectModel;
