@@ -8,10 +8,10 @@ const Email= require("../utils/email")
 
 
 // COOKIE OPTIONS FOR RESPONSE
-const cookieOptions= {
-    expires: Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24* 60 * 60 * 1000,
-    httpOnly: true
-}
+// const cookieOptions= {
+//     expires: Date.now() + process.env.JWT_COOKIE_EXPIRES_IN * 24* 60 * 60 * 1000,
+//     httpOnly: true
+// }
 
 
 // USER AUTHENTICATION ROUTES
@@ -100,8 +100,8 @@ exports.signupUser= catchAsync(async(req, res, next)=>{
     await new Email(newUser, url).sendWelcome()
 
     //creating a cookie to send to client
-    if(process.env.NODE_ENV ==='production') cookieOptions.secure= true;
-    res.cookie('jwt', token, cookieOptions)
+    // if(process.env.NODE_ENV ==='production') cookieOptions.secure= true;
+    // res.cookie('jwt', token, cookieOptions)
 
     res.status(200).json({
         status:'success',
@@ -130,8 +130,8 @@ exports.loginUser= catchAsync(async(req, res, next)=>{
 
 
     //creating a cookie to send to client
-    if(process.env.NODE_ENV ==='production') cookieOptions.secure= true;
-    res.cookie('jwt', token, cookieOptions)
+    // if(process.env.NODE_ENV ==='production') cookieOptions.secure= true;
+    // res.cookie('jwt', token, cookieOptions)
 
     res.status(200).json({
         status:'success',
