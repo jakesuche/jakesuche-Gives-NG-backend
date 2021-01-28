@@ -54,7 +54,8 @@ const sendErrProd=(err, res)=>{
         console.error(`ERROR!!!, ${err}`)
         res.status(err.statusCode).json({
             status: err.status,
-            message: `Something went very wrong`
+            message: err.message
+            // message: `Something went very wrong`
         })
     }
     
